@@ -14,13 +14,21 @@ public class ProjectsApp {
 	private ProjectService projectService = new ProjectService();
 	private Project curProject;
 
-	private List<String> operations = List.of("1) Add a project", "2) List Project", "3} Select a project");
+	//@formatter:off
+	private List<String> operations = List.of(
+			"1) Add a project", 
+			"2) List Project", 
+			"3} Select a project"
+			
+			);
+   //@formatter:on
 
 	public static void main(String[] args) {
 
 		new ProjectsApp().processUserSelections();
 	}
 
+	// Selections made available for the user to choose which task to complete.
 	private void processUserSelections() {
 		boolean done = false;
 
@@ -56,6 +64,7 @@ public class ProjectsApp {
 
 	}
 
+//Returns a project selested from the DB by ID
 	private void selectProjects() {
 		listProjects();
 		Integer projectId = getIntInput("Enter a project ID to select a project");
@@ -66,6 +75,7 @@ public class ProjectsApp {
 
 	}
 
+	// List all projects inside the DB
 	private void listProjects() {
 		List<Project> projects = projectService.fetchAllProjects();
 
@@ -76,6 +86,7 @@ public class ProjectsApp {
 
 	}
 
+	// Allows a user to add a project to the DB
 	private void createProject() {
 		String projectName = getStringInput("Enter the project name: ");
 		BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours: ");
@@ -96,6 +107,7 @@ public class ProjectsApp {
 
 	}
 
+	//Converts string to decimal format ith 2 decimal points
 	private BigDecimal getDecimalInput(String prompt) {
 		String input = getStringInput(prompt);
 
@@ -114,10 +126,11 @@ public class ProjectsApp {
 		printOperations();
 
 		Integer input = getIntInput("Enter a menu selection");
-
+    //Checks if the user input is null, if so will exit the program, if not will continue with the input
 		return Objects.isNull(input) ? -1 : input;
 	}
 
+	// Converts string input to an integer
 	private Integer getIntInput(String prompt) {
 		String input = getStringInput(prompt);
 
@@ -132,12 +145,14 @@ public class ProjectsApp {
 		}
 	}
 
+	// Trims the input if it is not null, if null exits the program
 	private String getStringInput(String prompt) {
 		System.out.print(prompt + ": ");
 		String input = sc.nextLine();
 		return input.isBlank() ? null : input.trim();
 	}
 
+	// print results to the screen
 	private void printOperations() {
 		System.out.println("\nThese are the available selections. Press the Enter key to quit: ");
 		operations.forEach(line -> System.out.println("    " + line));
@@ -150,6 +165,7 @@ public class ProjectsApp {
 
 	}
 
+	// exits the menu
 	private boolean exitMenu() {
 		System.out.println("\n Exiting the menu. TTFN!");
 		return true;

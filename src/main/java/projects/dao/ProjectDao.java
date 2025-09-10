@@ -25,6 +25,7 @@ public class ProjectDao extends DaoBase {
 	private static final String STEP_TABLE = "step";
 	private static final String PROJECT_CATERGORY_TABLE = "project_category";
 
+	// Inserts data to SQL
 	public Project insertProject(Project project) {
 		//@formatter:off
 		String sql = ""
@@ -60,6 +61,7 @@ public class ProjectDao extends DaoBase {
 		}
 	}
 
+   //Retrieves all project from the DB
 	public List<Project> fetchAllProjects() {
 		String sql = "SELECT * FROM " + PROJECT_TABLE + " ORDER BY project_name";
 		try (Connection conn = DbConnection.getConnection()) {
@@ -84,55 +86,59 @@ public class ProjectDao extends DaoBase {
 		}
 	}
 
+	// Retrieves project by ID given
 	public Optional<Project> fetchProjectById(Integer projectId) {
 		String sql = "SELECT * FROM " + PROJECT_TABLE + " WHERE project_id = ?";
 		try (Connection conn = DbConnection.getConnection()) {
 			startTransaction(conn);
 
 			try {
-		Project project = null;
-		
-		try(PreparedStatement stmt = conn.prepareStatement(sql)){
-			setParameter(stmt, 1, projectId, Integer.class);
-			
-			try(ResultSet rs = stmt.executeQuery()){
-				if(rs.next()) {
-					project = extract(rs, Project.class);
+				Project project = null;
+
+				try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+					setParameter(stmt, 1, projectId, Integer.class);
+
+					try (ResultSet rs = stmt.executeQuery()) {
+						if (rs.next()) {
+							project = extract(rs, Project.class);
+						}
+					}
 				}
+
+				if (Objects.nonNull(project)) {
+					project.getMaterials().addAll(fetchMaterialsForProject(conn, projectId));
+					project.getSteps().addAll(fetchStepsForProject(conn, projectId));
+					project.getCategories().addAll(fetchCatergoriesForProject(conn, projectId));
+				}
+
+				commitTransaction(conn);
+				return Optional.ofNullable(project);
+			} catch (Exception e) {
+				rollbackTransaction(conn);
+				throw new DbException(e);
 			}
+
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
-		
-		if(Objects.nonNull(project)) {
-			project.getMaterials().addAll(fetchMaterialsForProject(conn, projectId));
-		    project.getSteps().addAll(fetchStepsForProject(conn, projectId));
-		    project.getCategories().addAll(fetchCatergoriesForProject(conn, projectId));
-		}
-		
-		commitTransaction(conn);
-		return Optional.ofNullable(project);
-	}catch(Exception e) {
-		rollbackTransaction(conn);
-		throw new DbException(e);
-	}
-	
-	
-}catch (SQLException e) {
-	throw new DbException(e);
-}
 	}
 
+	// Retrieves catergories that match ID given
 	private List<Category> fetchCatergoriesForProject(Connection conn, Integer projectId) throws SQLException {
-		String sql = "SELECT c.* FROM " + CATERGORY_TABLE + " c "
-				+ "JOIN " + PROJECT_CATERGORY_TABLE + " pc USING (category_id) "
-				+ "WHERE project_id = ?";
+		//@formatter:off
+		String sql = "SELECT c.* FROM " + CATERGORY_TABLE + " c " 
+		        + "JOIN " + PROJECT_CATERGORY_TABLE
+				+ " pc USING (category_id) " 
+		        + "WHERE project_id = ?";
+		//@formatter:on
 		
-		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			setParameter(stmt, 1, projectId, Integer.class);
-			
-			try(ResultSet rs = stmt.executeQuery()){
-				List<Category>  categories = new LinkedList<>();
-				
-				while(rs.next()) {
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				List<Category> categories = new LinkedList<>();
+
+				while (rs.next()) {
 					categories.add(extract(rs, Category.class));
 				}
 				return categories;
@@ -140,15 +146,16 @@ public class ProjectDao extends DaoBase {
 		}
 	}
 
+	// Retrieves project steps by id given
 	private List<Step> fetchStepsForProject(Connection conn, Integer projectId) throws SQLException {
 		String sql = "SELECT * FROM " + STEP_TABLE + " WHERE project_id = ?";
-		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			setParameter(stmt, 1, projectId, Integer.class);
-			
-			try(ResultSet rs = stmt.executeQuery()){
-				List<Step>  steps = new LinkedList<>();
-				
-				while(rs.next()) {
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				List<Step> steps = new LinkedList<>();
+
+				while (rs.next()) {
 					steps.add(extract(rs, Step.class));
 				}
 				return steps;
@@ -156,15 +163,16 @@ public class ProjectDao extends DaoBase {
 		}
 	}
 
+	// Retrieves materials by id given
 	private List<Material> fetchMaterialsForProject(Connection conn, Integer projectId) throws SQLException {
 		String sql = "SELECT * FROM " + MATERIAL_TABLE + " WHERE project_id = ?";
-		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			setParameter(stmt, 1, projectId, Integer.class);
-			
-			try(ResultSet rs = stmt.executeQuery()){
-				List<Material>  materials = new LinkedList<>();
-				
-				while(rs.next()) {
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				List<Material> materials = new LinkedList<>();
+
+				while (rs.next()) {
 					materials.add(extract(rs, Material.class));
 				}
 				return materials;
