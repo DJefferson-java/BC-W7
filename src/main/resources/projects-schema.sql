@@ -36,7 +36,7 @@ FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE
 
 CREATE TABLE category(
 category_id INT AUTO_INCREMENT NOT NULL,
-catergory_name VARCHAR(128) NOT NULL,
+category_name VARCHAR(128) NOT NULL,
 PRIMARY KEY (category_id)
 );
 

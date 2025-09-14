@@ -1,0 +1,13 @@
+INSERT INTO material (project_id, material_name, num_required, cost) VALUES (1, 'Door Hangers', 4, 50.00);
+INSERT INTO material (project_id, material_name, num_required, cost) VALUES (1, 'Screws', 20, 4);
+INSERT INTO material (project_id, material_name, num_required, cost) VALUES (2, 'Piping', 10, 4);
+INSERT INTO step (project_id, step_text, step_order) VALUES (1, 'Align Hangers on the opening side of the door', 1);
+INSERT INTO step (project_id, step_text, step_order) VALUES (1, 'Screw hangers into frame', 2);
+INSERT INTO step (project_id, step_text, step_order) VALUES (2, 'Install Piping', 1);
+INSERT INTO step (project_id, step_text, step_order) VALUES (2, 'Install Faucets', 2);
+INSERT INTO category (category_id, category_name) VALUES (1, 'Doors and Windows');
+INSERT INTO category (category_id, category_name) VALUES (2, 'Repairs');
+INSERT INTO category (category_id, category_name) VALUES (3, 'Gardening');
+INSERT INTO project_category (project_id, category_id) VALUES (1, 1);
+INSERT INTO project_category (project_id, category_id) VALUES (1, 2);
+INSERT INTO project_category (project_id, category_id) VALUES (2, 2);
