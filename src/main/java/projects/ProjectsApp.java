@@ -80,7 +80,7 @@ public class ProjectsApp {
 		projectService.deleteProject(projectId);
 		System.out.println("Project " + projectId + " was deleted succesfully.");
 
-		if (Objects.isNull(curProject) && curProject.getProjectId().equals(projectId)) {
+		if (Objects.nonNull(curProject) && curProject.getProjectId().equals(projectId)) {
 			curProject = null;
 		}
 	}
